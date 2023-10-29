@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <title>Send Data</title>
+    <!-- ajaxを使用 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div>"Hello, world. You're at the sendData sendData."</div>
+    <!-- sendData関数を呼び出すボタンを作成 -->
+    <button onclick="sendData()">sendData</button>
+
+    <script>
+        function sendData() {
+            let sendData = {
+                "key1": "value1",
+                "key2": "value2"
+            };
+            // 送信するデータ
+            let sendArrayData = [];
+
+            sendArrayData.push({
+                "name": "name1",
+                "value": "value1"
+            });
+            sendArrayData.push({
+                "name": "name2",
+                "value": "value2"
+            });
+            sendArrayData.push({
+                "name": "name3",
+                "value": "value3"
+            });
+
+            sendData["array_data"] = sendArrayData;
+            console.log("clicked");
+            // senddataをajaxでpost送信
+            //csrf_tokenの設定
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                async: false
+            });
+
+
+            $.ajax({
+                type: "POST",
+                url: "/sendData/sendData/",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }, // これがないと403エラー
+                data: sendData,
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                    console.log("textStatus : " + textStatus);
+                    console.log("errorThrown : " + errorThrown.message);
+                }
+            });
+        }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+
+    </script>
+</body>
+
+</html>
